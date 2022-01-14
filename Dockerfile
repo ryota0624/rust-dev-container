@@ -2,11 +2,11 @@ FROM ubuntu:20.04
 
 RUN apt update
 RUN apt install -y tzdata
-RUN apt install -y curl build-essential git clang cmake libstdc++-10-dev libssl-dev libxxhash-dev zlib1g-dev
+RUN apt install -y curl pkg-config build-essential git clang cmake libstdc++-10-dev libssl-dev libxxhash-dev zlib1g-dev
 RUN git clone https://github.com/rui314/mold.git
 RUN cd mold/ && git checkout v1.0.1 && make -j$(nproc) CXX=clang++make -j$(nproc) CXX=clang++ && make install
 ENV SCCACHE_CACHE_SIZE="1G"
-ENV export SCCACHE_DIR="/root/.cache/sccache"
+ENV SCCACHE_DIR="/root/.cache/sccache"
 ARG SCCACHE_VERSION=0.2.15
 RUN LINK=https://github.com/mozilla/sccache/releases/download && \
     SCCACHE_FILE=sccache-v$SCCACHE_VERSION-x86_64-unknown-linux-musl && \
@@ -24,4 +24,5 @@ RUN rustup component add rustfmt
 RUN rustup component add rust-analysis
 RUN rustup component add rust-src
 RUN rustup component add rls
+ENV RUSTC_WRAPPER=sccache
 WORKDIR /root
